@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\altenar_test_webapi.props" />
+</Project>
