@@ -12,7 +12,7 @@ public partial class Bet
 
     public Guid? IdEvent { get; set; }
 
-    public DateTime? CreateDataBet { get; set; }
+    public DateTime? CreateDateBet { get; set; }
 
     public int? CoeffType { get; set; }
 

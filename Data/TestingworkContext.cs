@@ -46,7 +46,7 @@ public class TestingworkContext : IdentityDbContext<Player, IdentityRole<Guid>, 
             entity.HasKey(e => e.Id).HasName("PK__Bets__3214EC0708EE0C59");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.CreateDataBet).HasColumnType("datetime");
+            entity.Property(e => e.CreateDateBet).HasColumnType("datetime");
 
             entity.HasOne(d => d.IdEventNavigation).WithMany(p => p.Bets)
                 .HasForeignKey(d => d.IdEvent)

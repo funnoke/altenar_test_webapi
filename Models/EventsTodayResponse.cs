@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace altenar_test_webapi.Models;
-public class AuthorizeRequest
+public class EventsTodayResponse
 {
     [Required]
-    public string userName {get; set;}
+    public string accessJwt {get; set;}
     [Required]
-    public string password {get; set;}
+    public string refreshToken {get; set;}
 }
