@@ -62,9 +62,4 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/imcrying", [Authorize(AuthenticationSchemes = "Bearer")] () =>
-{
-    return Results.Content("You are authorization, congratulation!!");
-});
-
 app.Run();
