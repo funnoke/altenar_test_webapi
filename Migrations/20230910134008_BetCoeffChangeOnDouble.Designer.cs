@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using altenar_test_webapi.Data;
 
@@ -11,9 +12,11 @@ using altenar_test_webapi.Data;
 namespace altenar_test_webapi.Migrations
 {
     [DbContext(typeof(TestingworkContext))]
-    partial class TestingworkContextModelSnapshot : ModelSnapshot
+    [Migration("20230910134008_BetCoeffChangeOnDouble")]
+    partial class BetCoeffChangeOnDouble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

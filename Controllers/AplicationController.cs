@@ -55,7 +55,7 @@ public class AplicationController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("BetList/{id:Guid}")]
+    [HttpGet("BetList/id={id:Guid}")]
     public async Task<IActionResult> BetList(Guid id)
     {
         if (!ModelState.IsValid)
@@ -69,13 +69,75 @@ public class AplicationController : ControllerBase
             .Join(_dbContext.SportsEvents,
             b => b.IdEvent,
             e => e.Id,
-            (b, e) => new {Id = b.Id 
-                            , NameSportsEvent = e.NameEvent
-                            , CreateDateBat = b.CreateDateBet
-                            , CoeffType = b.CoeffType
-                            , Coeff = b.Coeff
-                            , BetAmount = b.BetAmount})
+            (b, e) => new
+            {
+                Id = b.Id
+                            ,
+                NameSportsEvent = e.NameEvent
+                            ,
+                CreateDateBet = b.CreateDateBet
+                            ,
+                CoeffType = b.CoeffType
+                            ,
+                Coeff = b.Coeff
+                            ,
+                BetAmount = b.BetAmount
+            })
             .ToListAsync();
         return Ok(BetsList);
+    }
+    [Authorize]
+    [HttpPost("CreateBet/idplayer={idPlayer:Guid}&idEvent={idEvent:Guid}"
+    + "&CoeffType={coeffType:int:max(2):min(0)}&BetAmount={betAmount:float}")]
+    public async Task<IActionResult> CreateBet(Guid idPlayer, Guid idEvent, int coeffType, float betAmount)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var user = await _userManager.FindByIdAsync(idPlayer.ToString());
+        if (user == null)
+            return BadRequest("Bad credentials");
+        var sEvent = await _dbContext.SportsEvents
+                            .Where(x => x.Id == idEvent)
+                            .SingleOrDefaultAsync();
+        if (sEvent == null)
+            return BadRequest("Bad credentials");
+        if (sEvent.DateEvent < DateTime.Now)
+            return BadRequest("Event is already over");
+        if (user.Balance < betAmount)
+            return BadRequest("Player balance is too small");
+
+        double? coeffTypeEvent;
+        switch (coeffType)
+        {
+            case 0: 
+                coeffTypeEvent = sEvent.CoeffFirstTeam;
+                break;
+            case 1:
+                coeffTypeEvent = sEvent.CoeffDraw;
+                break;
+            case 2:
+                coeffTypeEvent = sEvent.CoeffSecondTeam;
+                break;
+            default:
+                throw new Exception("Coefficient value is null");
+        }
+
+        Bet newBet = new Bet{
+            Id = Guid.NewGuid(),
+            IdPlayer = user.Id,
+            IdEvent = sEvent.Id,
+            CreateDateBet = DateTime.Now,
+            CoeffType = coeffType,
+            Coeff = coeffTypeEvent,
+            BetAmount = betAmount,
+            IdEventNavigation = sEvent,
+            IdPlayerNavigation = user
+        };
+        user.Balance = user.Balance - betAmount;
+
+        _dbContext.Players.Update(user);
+        _dbContext.Bets.Add(newBet);
+        await _dbContext.SaveChangesAsync();
+        return Ok();
     }
 }
